@@ -1,7 +1,14 @@
 import re
-from datetime import date
+from datetime import date, datetime
+from enum import Enum
 
 from pydantic import BaseModel, Field, EmailStr, field_validator
+
+
+class Reasons(str, Enum):
+    NO_NETWORK = "нет доступа к сети"
+    PHONE_NOT_WORKING = "не работает телефон"
+    EMAIL_NOT_RECEIVED = "не приходят письма"
 
 
 class FormRequest(BaseModel):
@@ -10,6 +17,8 @@ class FormRequest(BaseModel):
     birth_date: date
     phone: str
     email: EmailStr
+    reason: Reasons
+    detection_date: datetime
 
     @field_validator('first_name', 'second_name')
     @classmethod
@@ -32,5 +41,13 @@ class FormRequest(BaseModel):
     def validate_phone(cls, value: str) -> str:
         if not re.fullmatch(r"\+7\d{10}", value):
             raise ValueError("Телефон должен иметь формат +7XXXXXXXXXX")
+
+        return value
+
+    @field_validator('detection_date')
+    @classmethod
+    def validate_birth_date(cls, value: datetime) -> datetime:
+        if value > datetime.now(value.tzinfo):
+            raise ValueError("Дата обнаружения не может быть в будущем")
 
         return value
