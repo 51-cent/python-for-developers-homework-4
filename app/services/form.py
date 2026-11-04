@@ -4,7 +4,7 @@ from pathlib import Path
 
 from app.shemas.form import FormRequest
 
-DATA_DIR = Path(__file__).resolve().parents[2] / 'data'
+DATA_DIR = Path(__file__).resolve().parents[1] / 'data'
 
 
 def save_form(data: FormRequest) -> bool:
