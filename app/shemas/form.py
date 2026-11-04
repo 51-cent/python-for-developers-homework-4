@@ -17,7 +17,7 @@ class FormRequest(BaseModel):
     birth_date: date
     phone: str
     email: EmailStr
-    reason: Reasons
+    reason: list[Reasons] = Field(min_length=1, max_length=3)
     detection_date: datetime
 
     @field_validator('first_name', 'second_name')
@@ -49,5 +49,13 @@ class FormRequest(BaseModel):
     def validate_birth_date(cls, value: datetime) -> datetime:
         if value > datetime.now(value.tzinfo):
             raise ValueError("Дата обнаружения не может быть в будущем")
+
+        return value
+
+    @field_validator('reason')
+    @classmethod
+    def validate_reason(cls, value: Reasons) -> Reasons:
+        if len(value) != len(set(value)):
+            raise ValueError("Причины не должны дублироваться")
 
         return value
